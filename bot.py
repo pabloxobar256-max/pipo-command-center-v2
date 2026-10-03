@@ -113,9 +113,9 @@ client = TelegramClient('bot_session_pro', API_ID, API_HASH)
 BOT_PHOTO = None
 bot_locked = False
 private_locked = False
-mute_status = {}       # {uid: {'until': timestamp, 'name': str, 'chat_id': int}}
+mute_status = {}
 warnings_data = defaultdict(list)
-pending_users = {}     # {uid: {'answer': int, 'chat': int, 'attempts': int, 'created_at': float}}
+pending_users = {}
 user_last_msg = defaultdict(lambda: defaultdict(float))
 
 # ============================================================
@@ -136,7 +136,6 @@ async def is_group_admin(chat_id, user_id):
 def contains_swear(text):
     if not text:
         return False
-    # تنظيف التشكيل والمسافات والرموز لمنع الالتفاف
     normalized = re.sub(r'[\u064B-\u065F\s\._\*\-#@\~]', '', text).lower()
     for pattern in BAD_WORDS:
         if re.search(pattern, text, re.IGNORECASE) or re.search(pattern, normalized, re.IGNORECASE):
@@ -299,7 +298,7 @@ async def handle_porn(event):
             await event.delete()
         except:
             pass
-        dur = 3600 # ساعة
+        dur = 3600
         await mute_user(event.chat_id, sender.id, dur)
         mute_status[sender.id] = {'until': time.time() + dur, 'name': sender.first_name or 'عضو', 'chat_id': event.chat_id}
         name = sender.first_name or "العضو"
@@ -364,7 +363,6 @@ async def handle_new_member(event):
                 'attempts': 0,
                 'created_at': time.time()
             }
-            # كتم مؤقت حتى يجيب
             await mute_user(event.chat_id, user.id, 120)
 
             wrong1 = ans + random.choice([-2, 1, 2, 3])
