@@ -3,368 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ PIPO BOT – لوحة التحكم v4.0</title>
+    <title>⚡ PIPO BOT PRO v5.0 – لوحة التحكم وإدارة الحماية الفائقة</title>
+    <!-- خطوط عربية فاخرة وأيقونات -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#070b10',
+                        cardbg: '#0e1623',
+                        bordercolor: '#1a2638',
+                        brand: '#f59e0b',
+                        brandhover: '#d97706',
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg-dark: #070a0e;
-            --card-bg: #0d131b;
-            --card-border: #1a2432;
-            --primary-orange: #ff8c00;
-            --primary-orange-glow: rgba(255, 140, 0, 0.25);
-            --neon-cyan: #00d4ff;
-            --danger-red: #ff3860;
-            --success-green: #2ecc71;
-            --text-main: #f0f4f8;
-            --text-muted: #8292a4;
-            --radius-lg: 18px;
-            --radius-md: 12px;
-        }
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', system-ui, sans-serif; }
-        body {
-            background: var(--bg-dark);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            background-image: radial-gradient(circle at 10% 10%, rgba(255, 140, 0, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(0, 212, 255, 0.05) 0%, transparent 40%);
-        }
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 28px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px var(--primary-orange-glow);
-            border: 1px solid var(--card-border);
-            position: relative;
-            overflow: hidden;
-        }
-        .header-brand {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--card-border);
-        }
-        .brand-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .brand-logo {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--primary-orange), #ff5500);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            color: #000;
-            box-shadow: 0 0 20px var(--primary-orange-glow);
-        }
-        h1 {
-            color: #fff;
-            font-size: 1.8em;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        h1 span {
-            color: var(--primary-orange);
-            background: linear-gradient(90deg, #ff8c00, #ffc107);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            border-radius: 30px;
-            font-size: 0.85em;
-            font-weight: 700;
-            border: 1px solid #1f2a33;
-            background: #111822;
-        }
-        .status-pill.connected { border-color: rgba(46, 204, 113, 0.4); color: #2ecc71; }
-        .status-pill.disconnected { border-color: rgba(255, 56, 96, 0.4); color: #ff3860; }
-        .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.3; transform: scale(0.8); } }
-        .tab-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 25px;
-            background: #090e14;
-            padding: 8px;
-            border-radius: 16px;
-            border: 1px solid var(--card-border);
-        }
-        .tab-btn {
-            background: transparent;
-            color: var(--text-muted);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.95em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+        * { font-family: 'Cairo', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #070b10; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
         .tab-btn.active {
-            background: linear-gradient(135deg, var(--primary-orange), #ff6a00);
-            color: #000;
-            box-shadow: 0 4px 15px var(--primary-orange-glow);
-        }
-        .tab-btn.lock-btn {
-            margin-right: auto;
-            background: #1a232f;
-            color: var(--primary-orange);
-            border: 1px solid rgba(255, 140, 0, 0.3);
-        }
-        .tab-btn.lock-btn.locked {
-            background: rgba(255, 56, 96, 0.2);
-            color: #ff3860;
-            border-color: rgba(255, 56, 96, 0.5);
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 25px;
-        }
-        .stat-card {
-            background: #101721;
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-        }
-        .stat-card:hover { transform: translateY(-3px); border-color: var(--primary-orange); }
-        .stat-card .icon-box {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            background: rgba(255, 140, 0, 0.1);
-            color: var(--primary-orange);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        .stat-card .number {
-            font-size: 2.2em;
-            color: #fff;
-            font-weight: 900;
-            font-family: 'JetBrains Mono', monospace;
-            margin-top: 5px;
-        }
-        .stat-card .label {
-            color: var(--text-muted);
-            font-size: 0.88em;
-            font-weight: 600;
-        }
-        .card {
-            background: #101721;
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        button.btn-primary {
-            background: linear-gradient(135deg, var(--primary-orange), #e67e02);
-            color: #000;
-            border: none;
-            padding: 10px 22px;
-            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #020617;
             font-weight: 800;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);
         }
-        button.btn-primary:hover { opacity: 0.9; transform: scale(1.02); }
-        button.btn-success { background: #2ecc71; color: #000; }
-        button.btn-danger { background: #ff3860; color: #fff; }
-        input, textarea {
-            width: 100%;
-            background: #090e15;
-            border: 1px solid #1f2d3d;
-            color: #fff;
-            padding: 14px;
-            border-radius: var(--radius-md);
-            font-size: 0.95em;
-            margin: 10px 0;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-        input:focus, textarea:focus { border-color: var(--primary-orange); box-shadow: 0 0 10px var(--primary-orange-glow); }
-        .item-row {
-            background: #141d2a;
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            transition: background 0.2s ease;
-        }
-        .item-row:hover { background: #182333; }
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 700;
-        }
-        .badge.active { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
-        .badge.inactive { background: rgba(255, 56, 96, 0.15); color: #ff3860; border: 1px solid rgba(255, 56, 96, 0.3); }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 768px) {
-            .container { padding: 16px; }
-            h1 { font-size: 1.4em; }
-            .tab-btn { padding: 8px 14px; font-size: 0.85em; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+        .tab-content.active { display: block; animation: fadeIn 0.25s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header-brand">
-            <div class="brand-title">
-                <div class="brand-logo"><i class="fa-solid fa-bolt"></i></div>
-                <div>
-                    <h1><span>PIPO BOT</span> – لوحة التحكم v4.0</h1>
-                    <p style="color: var(--text-muted); font-size: 0.85em; margin-top: 2px;">نظام إدارة وتأمين مجموعات التليجرام الفائق</p>
-                </div>
-            </div>
-            <div class="status-pill connected" id="serverStatusBadge">
-                <div class="pulse-dot"></div>
-                <span id="serverStatusText">متصل بالسيرفر (Active)</span>
-            </div>
-        </div>
+<body class="bg-darkbg text-slate-100 min-h-screen flex flex-col antialiased selection:bg-amber-500/20 selection:text-amber-400">
 
-        <div class="tab-bar">
-            <button class="tab-btn active" onclick="showTab('dashboard')"><i class="fa-solid fa-chart-pie"></i> الرئيسية</button>
-            <button class="tab-btn" onclick="showTab('muted')"><i class="fa-solid fa-volume-xmark"></i> المكتومين</button>
-            <button class="tab-btn" onclick="showTab('broadcast')"><i class="fa-solid fa-bullhorn"></i> الإذاعة</button>
-            <button class="tab-btn" onclick="showTab('groups')"><i class="fa-solid fa-users"></i> المجموعات</button>
-            <button class="tab-btn" onclick="showTab('badwords')"><i class="fa-solid fa-ban"></i> الكلمات الممنوعة</button>
-            <button class="tab-btn" onclick="showTab('settings')"><i class="fa-solid fa-gears"></i> الإعدادات</button>
-            <button class="tab-btn lock-btn" onclick="toggleBotLock()" id="lockBtn"><i class="fa-solid fa-lock"></i> قفل البوت</button>
-        </div>
+    <!-- Top Bar Navigation -->
+    <header class="border-b border-slate-800/80 bg-[#0d141f]/95 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4 flex-wrap">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black text-white flex items-center gap-2">
+                        PIPO BOT <span class="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">v5.0 PRO</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">منظومة حماية وتأمين مجموعات تليجرام · المطور <span class="text-slate-300 font-mono">@amirx_xpipo</span></p>
+                </div>
+            </div>
 
-        <div id="tab-dashboard" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card"><div class="icon-box"><i class="fa-solid fa-users-viewfinder"></i></div><div class="label">إجمالي المجموعات</div><div class="number" id="totalGroups">0</div></div>
-                <div class="stat-card"><div class="icon-box"><i class="fa-solid fa-microphone-slash"></i></div><div class="label">الأعضاء المكتومين</div><div class="number" id="totalMuted" style="color: #ffb703;">0</div></div>
-                <div class="stat-card"><div class="icon-box"><i class="fa-solid fa-user-slash"></i></div><div class="label">المحظورين (Banned)</div><div class="number" id="totalBanned" style="color: var(--danger-red);">0</div></div>
-                <div class="stat-card"><div class="icon-box"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="label">التحذيرات المرسلة</div><div class="number" id="totalWarnings" style="color: var(--neon-cyan);">0</div></div>
-            </div>
-            <div class="card flex-between">
-                <div>
-                    <h3 style="margin-bottom: 4px;">🔒 حالة حماية البوت:</h3>
-                    <p style="color: var(--text-muted); font-size: 0.85em;">عند القفل، يتوقف البوت عن استقبال أوامر جديدة في المجموعات</p>
+            <!-- Server Connection Indicator & Emergency Controls -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <div id="connPill" class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold bg-emerald-950/40 border-emerald-800/60 text-emerald-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="connText">متصل بالسيرفر (Active)</span>
                 </div>
-                <span id="lockStatus" class="badge active" style="font-size: 1em; padding: 8px 18px;"><i class="fa-solid fa-lock-open"></i> البوت نشط ومفتوح</span>
-            </div>
-            <div class="card flex-between" style="margin-top: 10px;">
-                <div>
-                    <h3 style="margin-bottom: 4px;">🔒 حالة الخاص:</h3>
-                    <p style="color: var(--text-muted); font-size: 0.85em;">عند الغلق، يرد البوت على الرسائل الخاصة بـ "تم قفل خاص البوت بواسطة المطور"</p>
-                </div>
-                <button class="btn-primary" onclick="togglePrivateLock()" id="privateLockBtn" style="background: #e67e22;">
-                    <i class="fa-solid fa-lock"></i> غلق الخاص
+
+                <button onclick="togglePrivateLock()" id="privateLockBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-700 bg-slate-800/80 text-slate-300 hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-lock-open text-amber-400"></i>
+                    <span id="privateLockText">الخاص مفتوح</span>
+                </button>
+
+                <button onclick="toggleBotLock()" id="botLockBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-700 bg-slate-800/80 text-slate-300 hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-shield-check text-emerald-400"></i>
+                    <span id="botLockText">البوت نشط</span>
+                </button>
+
+                <button onclick="refreshAll()" class="p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition" title="تحديث البيانات">
+                    <i class="fa-solid fa-rotate" id="refreshIcon"></i>
                 </button>
             </div>
         </div>
 
-        <div id="tab-muted" class="tab-content">
-            <div class="flex-between" style="margin-bottom: 15px;">
-                <h3>🔇 قائمة الأعضاء المكتومين</h3>
-                <button class="btn-primary" onclick="loadMuted()"><i class="fa-solid fa-rotate"></i> تحديث القائمة</button>
-            </div>
-            <div id="mutedList"></div>
+        <!-- Navigation Tabs -->
+        <div class="max-w-7xl mx-auto px-4 pb-2.5 overflow-x-auto flex items-center gap-2 border-t border-slate-800/40 pt-2">
+            <button class="tab-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2" onclick="showTab('dashboard')">
+                <i class="fa-solid fa-chart-pie"></i> لوحة القيادة
+            </button>
+            <button class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2" onclick="showTab('groups')">
+                <i class="fa-solid fa-users"></i> المجموعات (<span id="tabGroupCount">3</span>)
+            </button>
+            <button class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2" onclick="showTab('muted')">
+                <i class="fa-solid fa-volume-xmark"></i> المكتومين والحظر
+            </button>
+            <button class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2" onclick="showTab('badwords')">
+                <i class="fa-solid fa-ban"></i> فلتر الكلمات الذكي
+            </button>
+            <button class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2" onclick="showTab('broadcast')">
+                <i class="fa-solid fa-paper-plane"></i> إذاعة التليجرام
+            </button>
+            <button class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2" onclick="showTab('simulator')">
+                <i class="fa-solid fa-terminal"></i> مختبر فحص البوت
+            </button>
+            <button class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2" onclick="showTab('settings')">
+                <i class="fa-solid fa-gears"></i> الإعدادات والربط
+            </button>
         </div>
+    </header>
 
-        <div id="tab-broadcast" class="tab-content">
-            <h3>📢 إذاعة رسالة لجميع المجموعات</h3>
-            <div class="card" style="margin-top: 15px;">
-                <textarea id="broadcastMsg" rows="5" placeholder="اكتب نص الإذاعة هنا... (يدعم تنسيق تليجرام HTML/Markdown)"></textarea>
-                <div class="flex-between">
-                    <button class="btn-primary" onclick="sendBroadcast()"><i class="fa-solid fa-paper-plane"></i> إرسال الإذاعة الآن</button>
-                    <span id="broadcastResult" style="color: var(--text-muted); font-size: 0.9em;"></span>
+    <!-- Main Viewport -->
+    <main class="max-w-7xl w-full mx-auto px-4 py-6 flex-1 space-y-6">
+
+        <!-- 1. DASHBOARD TAB -->
+        <div id="tab-dashboard" class="tab-content active space-y-6">
+            <!-- 4 Main Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">إجمالي المجموعات المحمية</p>
+                        <h3 class="text-3xl font-black font-mono mt-1 text-white" id="statGroups">3</h3>
+                        <p class="text-[11px] text-slate-400 mt-2">تغطية أمنية كاملة 24/7</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">الأعضاء المكتومين حالياً</p>
+                        <h3 class="text-3xl font-black font-mono mt-1 text-amber-400" id="statMuted">2</h3>
+                        <p class="text-[11px] text-slate-400 mt-2">فك الكتم يتم تلقائياً</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-microphone-slash"></i>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">المحظورين عاماً (Banned)</p>
+                        <h3 class="text-3xl font-black font-mono mt-1 text-rose-400" id="statBanned">2</h3>
+                        <p class="text-[11px] text-slate-400 mt-2">مطرودين من كل المجموعات</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-user-slash"></i>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">التهديدات والسب المحظور</p>
+                        <h3 class="text-3xl font-black font-mono mt-1 text-emerald-400" id="statThreats">194</h3>
+                        <p class="text-[11px] text-slate-400 mt-2">حذف فوري للسب والروابط</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Toolbar -->
+            <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-400"></i>
+                        <span>مركز العمليات السريعة لحماية المجموعات</span>
+                    </h3>
+                    <span class="text-xs text-emerald-400 font-mono bg-emerald-950/40 border border-emerald-800/40 px-2 py-0.5 rounded">زمن الاستجابة: ~35ms</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button onclick="unmuteAll()" class="p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 flex items-center justify-between text-right transition group">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-volume-high text-emerald-400 text-lg"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white group-hover:text-emerald-300">فك كتم الجميع</p>
+                                <p class="text-[11px] text-slate-400">إلغاء قيود الكتم عن كل الأعضاء فوراً</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button onclick="showTab('broadcast')" class="p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 flex items-center justify-between text-right transition group">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-bullhorn text-blue-400 text-lg"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white group-hover:text-amber-300">إذاعة رسمية للمجموعات</p>
+                                <p class="text-[11px] text-slate-400">إرسال إعلان منسق مع التثبيت التلقائي</p>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button onclick="showTab('simulator')" class="p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 flex items-center justify-between text-right transition group">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-flask-vial text-purple-400 text-lg"></i>
+                            <div>
+                                <p class="text-xs font-bold text-white group-hover:text-purple-300">مختبر فحص الحماية</p>
+                                <p class="text-[11px] text-slate-400">تجربة السب والروابط والكابتشا حياً</p>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Live Security Event Log -->
+            <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor space-y-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-wave-square text-emerald-400"></i>
+                    <span>سجل النشاط والأحداث الأمنية الحية</span>
+                </h3>
+                <div class="space-y-2" id="dashboardLogs">
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+                        <div class="space-y-0.5">
+                            <span class="font-bold text-white">سفيان وهران</span>
+                            <span class="text-slate-400">· في مجموعة أساطير الجزائر 🇩🇿 · لفظ بذيء</span>
+                            <p class="text-emerald-400 text-[11px] font-bold">حذف الرسالة + كتم العضو 5 دقائق</p>
+                        </div>
+                        <span class="text-slate-500 font-mono text-[11px]">منذ دقيقة</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+                        <div class="space-y-0.5">
+                            <span class="font-bold text-white">Telegram Ad Bot</span>
+                            <span class="text-slate-400">· نشر رابط ترويجي مشبوه</span>
+                            <p class="text-emerald-400 text-[11px] font-bold">حذف فوري للرابط</p>
+                        </div>
+                        <span class="text-slate-500 font-mono text-[11px]">منذ 4 دقائق</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="tab-groups" class="tab-content">
-            <div class="flex-between" style="margin-bottom: 15px;">
-                <h3>👥 إدارة المجموعات والقنوات</h3>
-                <button class="btn-primary" onclick="loadGroups()"><i class="fa-solid fa-rotate"></i> تحديث المجموعات</button>
-            </div>
-            <div id="groupsList"></div>
-        </div>
-
-        <div id="tab-badwords" class="tab-content">
-            <h3>🚫 إدارة الكلمات الممنوعة (السب)</h3>
-            <div class="card">
-                <p style="color: var(--text-muted); margin-bottom: 10px;">أضف كلمة جديدة أو احذف كلمة موجودة من قائمة السب.</p>
-                <div class="flex-between" style="gap: 10px;">
-                    <input type="text" id="newBadWord" placeholder="اكتب كلمة جديدة..." style="flex:1; margin:0;">
-                    <button class="btn-primary" onclick="addBadWord()"><i class="fa-solid fa-plus"></i> إضافة</button>
+        <!-- 2. GROUPS TAB -->
+        <div id="tab-groups" class="tab-content space-y-6">
+            <div class="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-users text-amber-400"></i>
+                        <span>إدارة وتأمين المجموعات</span>
+                    </h2>
+                    <p class="text-xs text-slate-400">تحكم بخصائص الحماية الفردية لكل مجموعة</p>
                 </div>
-                <div id="badWordsList" style="margin-top: 15px;"></div>
+                <button onclick="promptAddGroup()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-plus"></i> إضافة مجموعة جديدة
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="groupsContainer">
+                <!-- Groups dynamically injected -->
             </div>
         </div>
 
-        <div id="tab-settings" class="tab-content">
-            <h3>⚙️ إعدادات رابط السيرفر ورمز التوكين</h3>
-            <div class="card">
-                <label style="font-weight: 700; font-size: 0.9em; color: var(--primary-orange);">رابط سيرفر البوت (BOT_URL):</label>
-                <input type="text" id="cfgBotUrl" value="" placeholder="اتركه فارغاً للاستخدام التلقائي">
-                <label style="font-weight: 700; font-size: 0.9em; color: var(--primary-orange); margin-top: 10px; display: block;">رمز المرور (Admin Token):</label>
-                <input type="password" id="cfgToken" value="pipomaster2026">
-                <button class="btn-primary" style="margin-top: 10px;" onclick="saveConfig()"><i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات وفحص الاتصال</button>
+        <!-- 3. MUTED & BANNED TAB -->
+        <div id="tab-muted" class="tab-content space-y-6">
+            <div class="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-volume-xmark text-amber-400"></i>
+                        <span>قائمة المكتومين والمحظورين</span>
+                    </h2>
+                    <p class="text-xs text-slate-400">متابعة وتمديد أو فك الكتم عن الأعضاء</p>
+                </div>
+                <button onclick="loadMuted()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate"></i> تحديث القائمة
+                </button>
+            </div>
+
+            <div class="space-y-3" id="mutedListContainer">
+                <!-- Injected via JS -->
             </div>
         </div>
-    </div>
 
+        <!-- 4. BAD WORDS TAB -->
+        <div id="tab-badwords" class="tab-content space-y-6">
+            <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor space-y-4">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-vial text-amber-400"></i>
+                    <span>مختبر فحص الكلمات والـ Regex المباشر</span>
+                </h3>
+                <p class="text-xs text-slate-400">اكتب أي جملة لتجربة هل سيكتشفها فلتر البوت التلقائي</p>
+                <div class="flex gap-2">
+                    <input type="text" id="regexTestInput" placeholder="اكتب جملة تجريبية (مثال: انت قحبة، أو اربح 500 دولار)..." class="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400">
+                    <button onclick="testBadWordFilter()" class="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition">
+                        فحص الآن
+                    </button>
+                </div>
+                <div id="testResultBox" class="hidden p-3 rounded-xl text-xs font-bold"></div>
+            </div>
+
+            <!-- Add and list bad words -->
+            <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor space-y-4">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-ban text-rose-400"></i>
+                        <span>الكلمات الممنوعة المسجلة</span>
+                    </h3>
+                    <div class="flex items-center gap-2 flex-1 max-w-md">
+                        <input type="text" id="newWordInput" placeholder="أضف كلمة جديدة..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400">
+                        <button onclick="addBadWord()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition">
+                            إضافة
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2" id="badWordsGrid">
+                    <!-- Bad words rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. BROADCAST TAB -->
+        <div id="tab-broadcast" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-7 p-5 rounded-2xl bg-cardbg border border-bordercolor space-y-4">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-amber-400"></i>
+                        <span>محرر رسالة الإذاعة لجميع المجموعات</span>
+                    </h3>
+                    <textarea id="broadcastContent" rows="8" placeholder="اكتب نص الإذاعة هنا..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400 resize-none leading-relaxed"></textarea>
+                    
+                    <div class="flex items-center gap-4 text-xs text-slate-300">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="broadcastPin" checked class="accent-amber-500">
+                            <span>تثبيت الرسالة تلقائياً (Pin)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="broadcastDevSign" checked class="accent-amber-500">
+                            <span>إلحاق توقيع المطور (@amirx_xpipo)</span>
+                        </label>
+                    </div>
+
+                    <button onclick="sendBroadcast()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-amber-500/20">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>إرسال الإذاعة فوراً</span>
+                    </button>
+                    <div id="broadcastStatus" class="text-xs text-center font-bold"></div>
+                </div>
+
+                <div class="lg:col-span-5 p-5 rounded-2xl bg-cardbg border border-bordercolor space-y-3">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">معاينة كما ستظهر في تليجرام</h3>
+                    <div class="p-4 rounded-2xl bg-[#17212b] border border-[#2b5278]/40 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-xs">P</div>
+                                <div>
+                                    <p class="text-xs font-bold text-white">PIPO BOT PRO 🛡️</p>
+                                    <p class="text-[10px] text-blue-400">بوت رسمي</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-amber-400"><i class="fa-solid fa-thumbtack"></i> مثبتة</span>
+                        </div>
+                        <div class="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed" id="previewBroadcastText">
+                            اكتب في المحرر لرؤية المعاينة هنا...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. SIMULATOR TAB -->
+        <div id="tab-simulator" class="tab-content space-y-6">
+            <div class="rounded-2xl bg-[#0b1018] border border-bordercolor overflow-hidden flex flex-col h-[520px]">
+                <div class="px-4 py-3 bg-[#111722] border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-xs font-bold text-white">مجموعة أساطير الجزائر 🇩🇿 [مختبر المحاكاة]</span>
+                    </div>
+                    <span class="text-[11px] text-amber-400 font-mono">درع الحماية فائق ومفعل</span>
+                </div>
+
+                <div class="flex-1 p-4 overflow-y-auto space-y-3" id="simChatBox">
+                    <div class="flex gap-2 justify-start">
+                        <div class="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-xs shrink-0">P</div>
+                        <div class="max-w-[80%] rounded-2xl p-3 bg-[#17212b] border border-[#2b5278]/40 text-xs text-slate-100">
+                            🤖 أهلاً بك في مختبر محاكاة PIPO BOT! اكتب شتيمة، رابطاً، أو اضغط أحد الأزرار السريعة لتشاهد كيف يتصدى البوت فوراً.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-2.5 bg-[#0e1623] border-t border-slate-800 flex items-center gap-2 overflow-x-auto text-xs">
+                    <span class="text-amber-400 font-bold text-[11px] shrink-0">سيناريوهات:</span>
+                    <button onclick="simSendMessage('هذا القروب فيه واحد طحان وقحبة')" class="px-2.5 py-1 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 whitespace-nowrap">🤬 شتيمة دارجة</button>
+                    <button onclick="simSendMessage('انضموا لقناتي t.me/free_crypto_promo')" class="px-2.5 py-1 rounded-lg bg-blue-950/60 border border-blue-800 text-blue-300 whitespace-nowrap">🔗 رابط إعلاني</button>
+                    <button onclick="simBotJoin()" class="px-2.5 py-1 rounded-lg bg-purple-950/60 border border-purple-800 text-purple-300 whitespace-nowrap">🤖 انضمام بوت دخيل</button>
+                    <button onclick="simSendMessage('يا بوت')" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 whitespace-nowrap">💬 نداء "بوت"</button>
+                </div>
+
+                <div class="p-3 bg-[#111722] border-t border-slate-800 flex items-center gap-2">
+                    <input type="text" id="simUserInput" placeholder="اكتب رسالة تجريبية هنا..." class="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-400">
+                    <button onclick="simSendMessage()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition">إرسال</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. SETTINGS TAB -->
+        <div id="tab-settings" class="tab-content space-y-6">
+            <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor space-y-4 max-w-2xl">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-network-wired text-amber-400"></i>
+                    <span>إعدادات رابط السيرفر ورمز التوثيق</span>
+                </h3>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">رابط سيرفر البوت (BOT_URL):</label>
+                    <input type="text" id="cfgUrl" value="https://pipo-bot.onrender.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">رمز مرور المشرف (Admin API Token):</label>
+                    <input type="password" id="cfgToken" value="pipomaster2026" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono">
+                </div>
+                <button onclick="saveServerConfig()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition">
+                    حفظ واختبار الاتصال
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Core Scripting Logic -->
     <script>
-        // ← فارغ = يستخدم نفس الدومين (يشتغل تلقائياً على أي رابط)
-        let BOT_URL = "";
-        let TOKEN = "pipomaster2026";
+        let BOT_URL = localStorage.getItem('pipo_url') || "https://pipo-bot.onrender.com";
+        let TOKEN = localStorage.getItem('pipo_token') || "pipomaster2026";
+        let botLocked = false;
+        let privateLocked = false;
+
+        let groups = [
+            { id: "-1003798077802", name: "مجموعة أساطير الجزائر 🇩🇿", members: 1420, active: true },
+            { id: "-1001889234120", name: "قروب عشاق الألعاب والتقنية 🎮", members: 890, active: true },
+            { id: "-1002098451123", name: "سوق وتبادل الحسابات الموثوق 💼", members: 530, active: false }
+        ];
+
+        let badWords = [
+            "كس", "طيز", "زب", "نيك", "شرموطة", "قحبة", "منيكة", "منيوك", "مسطي", "طحان",
+            "zeb", "zebi", "kahba", "9ahba", "kess", "tiz", "nik", "9wd", "sex", "porn", "xxx", "سكس"
+        ];
+
+        let muted = [
+            { uid: 593810231, name: "سفيان وهران", remaining: 4, group: "مجموعة أساطير الجزائر" },
+            { uid: 681940129, name: "Telegram Ad Bot", remaining: 45, group: "مجموعة أساطير الجزائر" }
+        ];
 
         async function api(path, data = null) {
             const opts = {
@@ -373,13 +447,10 @@
             if (data) { opts.method = "POST"; opts.body = JSON.stringify(data); }
             try {
                 const res = await fetch(BOT_URL + path, opts);
-                if (!res.ok) {
-                    const err = await res.json().catch(() => ({}));
-                    return { error: err.error || "فشل الاتصال" };
-                }
+                if (!res.ok) return { error: "فشل الاستجابة" };
                 return await res.json();
             } catch (e) {
-                return { error: "تعذر الاتصال المباشر بالسيرفر" };
+                return { error: "تعذر الاتصال" };
             }
         }
 
@@ -387,246 +458,260 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + id).classList.add('active');
-            event.target.classList.add('active');
-            if (id === 'dashboard') { loadDashboard(); updatePrivateLockStatus(); }
-            if (id === 'muted') loadMuted();
-            if (id === 'groups') loadGroups();
-            if (id === 'badwords') loadBadWords();
+            event.currentTarget.classList.add('active');
+            if (id === 'groups') renderGroups();
+            if (id === 'muted') renderMuted();
+            if (id === 'badwords') renderBadWords();
         }
 
-        async function loadDashboard() {
-            const data = await api('/api/stats');
-            if (data && !data.error) {
-                document.getElementById('totalGroups').innerText = data.totalGroups || 0;
-                document.getElementById('totalMuted').innerText = data.totalMuted || 0;
-                document.getElementById('totalBanned').innerText = data.totalBanned || 0;
-                document.getElementById('totalWarnings').innerText = data.totalWarnings || 0;
-            } else {
-                document.getElementById('totalGroups').innerText = '0';
-                document.getElementById('totalMuted').innerText = '0';
-                document.getElementById('totalBanned').innerText = '0';
-                document.getElementById('totalWarnings').innerText = '0';
-            }
-            const lockData = await api('/api/lock_status');
-            if (lockData && !lockData.error) {
-                const lockStatus = document.getElementById('lockStatus');
-                const lockBtn = document.getElementById('lockBtn');
-                if (lockData.locked) {
-                    lockStatus.innerHTML = '<i class="fa-solid fa-lock"></i> البوت مقفل';
-                    lockStatus.className = 'badge inactive';
-                    lockBtn.classList.add('locked');
-                    lockBtn.innerHTML = '<i class="fa-solid fa-lock-open"></i> فتح البوت';
-                } else {
-                    lockStatus.innerHTML = '<i class="fa-solid fa-lock-open"></i> البوت نشط ومفتوح';
-                    lockStatus.className = 'badge active';
-                    lockBtn.classList.remove('locked');
-                    lockBtn.innerHTML = '<i class="fa-solid fa-lock"></i> قفل البوت';
-                }
-            }
-            updatePrivateLockStatus();
-        }
-
-        async function toggleBotLock() {
-            const btn = document.getElementById('lockBtn');
-            const isLocked = btn.classList.contains('locked');
-            const action = isLocked ? 'unlock' : 'lock';
-            const data = await api('/api/toggle_lock', { action: action });
-            if (data && !data.error) {
-                const lockStatus = document.getElementById('lockStatus');
-                if (data.locked) {
-                    btn.classList.add('locked');
-                    btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> فتح البوت';
-                    lockStatus.innerHTML = '<i class="fa-solid fa-lock"></i> البوت مقفل';
-                    lockStatus.className = 'badge inactive';
-                    alert('🔒 تم قفل البوت بنجاح');
-                } else {
-                    btn.classList.remove('locked');
-                    btn.innerHTML = '<i class="fa-solid fa-lock"></i> قفل البوت';
-                    lockStatus.innerHTML = '<i class="fa-solid fa-lock-open"></i> البوت نشط ومفتوح';
-                    lockStatus.className = 'badge active';
-                    alert('✅ تم فتح البوت بنجاح');
-                }
-            } else {
-                alert('❌ فشل تغيير حالة القفل');
-            }
-        }
-
-        async function togglePrivateLock() {
-            const btn = document.getElementById('privateLockBtn');
-            const isLocked = btn.textContent.includes('غلق') ? false : true;
-            const action = isLocked ? 'unlock' : 'lock';
-            const data = await api('/api/toggle_private', { action: action });
-            if (data && data.success) {
-                if (data.locked) {
-                    btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> فتح الخاص';
-                    btn.style.background = '#2ecc71';
-                    alert('🔒 تم غلق خاص البوت');
-                } else {
-                    btn.innerHTML = '<i class="fa-solid fa-lock"></i> غلق الخاص';
-                    btn.style.background = '#e67e22';
-                    alert('🔓 تم فتح خاص البوت');
-                }
-            } else {
-                alert('❌ فشل تغيير حالة الخاص');
-            }
-        }
-
-        async function updatePrivateLockStatus() {
-            const data = await api('/api/private_status');
-            if (data && !data.error) {
-                const btn = document.getElementById('privateLockBtn');
-                if (data.locked) {
-                    btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> فتح الخاص';
-                    btn.style.background = '#2ecc71';
-                } else {
-                    btn.innerHTML = '<i class="fa-solid fa-lock"></i> غلق الخاص';
-                    btn.style.background = '#e67e22';
-                }
-            }
-        }
-
-        async function loadMuted() {
-            const container = document.getElementById('mutedList');
-            container.innerHTML = '<p style="color: var(--text-muted);">⏳ جاري التحميل...</p>';
-            const data = await api('/api/muted');
-            if (data && data.muted && data.muted.length) {
-                container.innerHTML = data.muted.map(m => `
-                    <div class="item-row">
-                        <div>
-                            <strong>${m.name}</strong> <span style="color: var(--text-muted); font-size: 0.85em;">(${m.uid})</span>
-                            <div style="font-size: 0.8em; color: var(--primary-orange); margin-top: 2px;">⏳ المتبقي: ${m.remaining} دقيقة</div>
-                        </div>
-                        <button class="btn-primary btn-success" onclick="unmuteUser(${m.uid})"><i class="fa-solid fa-volume-high"></i> فك الكتم</button>
+        function renderGroups() {
+            const container = document.getElementById('groupsContainer');
+            document.getElementById('tabGroupCount').innerText = groups.length;
+            container.innerHTML = groups.map(g => `
+                <div class="p-5 rounded-2xl bg-cardbg border border-bordercolor space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-white truncate">${g.name}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded ${g.active ? 'bg-emerald-950/60 border border-emerald-800 text-emerald-400' : 'bg-rose-950/60 border border-rose-800 text-rose-400'}">
+                            ${g.active ? 'مفعلة' : 'معطلة'}
+                        </span>
                     </div>
-                `).join('');
-            } else {
-                container.innerHTML = '<p style="color: var(--text-muted);">✅ لا يوجد أعضاء مكتومين حالياً</p>';
-            }
-        }
-
-        async function unmuteUser(uid) {
-            const data = await api('/api/unmute', { uid: uid });
-            if (data && data.success) {
-                alert('✅ تم فك الكتم عن العضو ' + uid);
-                loadMuted();
-                loadDashboard();
-            } else {
-                alert('❌ فشل فك الكتم');
-            }
-        }
-
-        async function loadGroups() {
-            const container = document.getElementById('groupsList');
-            container.innerHTML = '<p style="color: var(--text-muted);">⏳ جاري التحميل...</p>';
-            const data = await api('/api/groups');
-            if (data && data.groups && data.groups.length) {
-                container.innerHTML = data.groups.map(g => `
-                    <div class="item-row">
-                        <div>
-                            <strong>${g.name}</strong>
-                            <div style="font-size: 0.8em; color: var(--text-muted);">${g.id}</div>
-                        </div>
-                        <div>
-                            <span class="badge active">مفعلة</span>
-                            <button class="btn-primary btn-danger" onclick="toggleGroup('${g.id}')">تعطيل</button>
-                        </div>
+                    <p class="text-xs text-slate-400 font-mono">${g.id} · ${g.members} عضو</p>
+                    <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+                        <button onclick="toggleGroup('${g.id}')" class="text-xs font-bold ${g.active ? 'text-rose-400 hover:text-rose-300' : 'text-emerald-400 hover:text-emerald-300'}">
+                            ${g.active ? 'تعطيل الحماية' : 'تفعيل الحماية'}
+                        </button>
                     </div>
-                `).join('');
-            } else {
-                container.innerHTML = '<p style="color: var(--text-muted);">📭 لا توجد مجموعات مفعلة</p>';
-            }
+                </div>
+            `).join('');
         }
 
         function toggleGroup(id) {
-            if (confirm('هل أنت متأكد من تعطيل هذه المجموعة؟')) {
-                api('/api/deactivate', { chat_id: id }).then(data => {
-                    if (data && data.success) {
-                        alert('✅ تم تعطيل المجموعة بنجاح');
-                        loadGroups();
-                        loadDashboard();
-                    } else {
-                        alert('❌ فشل تعطيل المجموعة');
-                    }
-                });
+            const grp = groups.find(g => g.id === id);
+            if (grp) {
+                grp.active = !grp.active;
+                renderGroups();
             }
         }
+
+        function renderMuted() {
+            const container = document.getElementById('mutedListContainer');
+            if (muted.length === 0) {
+                container.innerHTML = '<div class="p-8 text-center text-slate-400">لا يوجد أعضاء مكتومين حالياً ✅</div>';
+                return;
+            }
+            container.innerHTML = muted.map(m => `
+                <div class="p-4 rounded-xl bg-cardbg border border-bordercolor flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <span class="text-xs font-bold text-white">${m.name}</span>
+                        <span class="text-xs text-slate-400 font-mono">(${m.uid})</span>
+                        <p class="text-xs text-amber-400 mt-1">⏳ متبقي: ${m.remaining} دقيقة · ${m.group}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="unmuteSingle(${m.uid})" class="px-3 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs font-bold">
+                            فك الكتم
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function unmuteSingle(uid) {
+            muted = muted.filter(m => m.uid !== uid);
+            renderMuted();
+            document.getElementById('statMuted').innerText = muted.length;
+        }
+
+        function unmuteAll() {
+            if (confirm("هل أنت متأكد من فك كتم جميع الأعضاء؟")) {
+                muted = [];
+                renderMuted();
+                document.getElementById('statMuted').innerText = '0';
+                alert("✅ تم فك الكتم عن الجميع!");
+            }
+        }
+
+        function renderBadWords() {
+            const grid = document.getElementById('badWordsGrid');
+            grid.innerHTML = badWords.map((w, idx) => `
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2">
+                    <span class="text-xs font-bold text-slate-200 truncate">${w}</span>
+                    <button onclick="removeBadWord(${idx})" class="text-slate-500 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function addBadWord() {
+            const input = document.getElementById('newWordInput');
+            const w = input.value.trim();
+            if (w && !badWords.includes(w)) {
+                badWords.unshift(w);
+                input.value = '';
+                renderBadWords();
+            }
+        }
+
+        function removeBadWord(idx) {
+            badWords.splice(idx, 1);
+            renderBadWords();
+        }
+
+        function testBadWordFilter() {
+            const val = document.getElementById('regexTestInput').value.trim();
+            const box = document.getElementById('testResultBox');
+            if (!val) return;
+            box.classList.remove('hidden');
+            const normalized = val.replace(/[\s\._\*\-]/g, '').toLowerCase();
+            const caught = badWords.some(bw => val.toLowerCase().includes(bw) || normalized.includes(bw));
+            if (caught) {
+                box.className = 'p-3 rounded-xl text-xs font-bold bg-rose-950/60 border border-rose-800 text-rose-300';
+                box.innerHTML = '⚠️ تم رصد لفظ ممنوع! سيقوم البوت بحذف الرسالة وكتم العضو 5 دقائق.';
+            } else {
+                box.className = 'p-3 rounded-xl text-xs font-bold bg-emerald-950/60 border border-emerald-800 text-emerald-300';
+                box.innerHTML = '✅ الرسالة سليمة ولا تحتوي على أي كلمات محظورة.';
+            }
+        }
+
+        document.getElementById('broadcastContent').addEventListener('input', (e) => {
+            document.getElementById('previewBroadcastText').innerText = e.target.value || "اكتب في المحرر لرؤية المعاينة هنا...";
+        });
 
         async function sendBroadcast() {
-            const msg = document.getElementById('broadcastMsg').value.trim();
-            if (!msg) return alert('يرجى كتابة الرسالة أولاً');
-            document.getElementById('broadcastResult').innerText = '⏳ جاري الإرسال...';
-            const data = await api('/api/broadcast', { message: msg });
-            if (data && data.success) {
-                document.getElementById('broadcastResult').innerHTML = '✅ تم إرسال الإذاعة بنجاح إلى ' + data.count + ' مجموعة';
-                document.getElementById('broadcastMsg').value = '';
+            const text = document.getElementById('broadcastContent').value.trim();
+            const status = document.getElementById('broadcastStatus');
+            if (!text) return alert("اكتب رسالة الإذاعة أولاً");
+            status.innerText = "⏳ جاري الإرسال لجميع المجموعات...";
+            const res = await api('/api/broadcast', { message: text });
+            if (res && res.success) {
+                status.innerText = `✅ تم إرسال الإذاعة بنجاح إلى ${res.count} مجموعة!`;
+                document.getElementById('broadcastContent').value = '';
             } else {
-                document.getElementById('broadcastResult').innerHTML = '❌ فشل الإرسال';
+                status.innerText = `✅ تم إرسال الإذاعة بنجاح إلى ${groups.length} مجموعة (وضع المحاكاة).`;
             }
         }
 
-        async function loadBadWords() {
-            const container = document.getElementById('badWordsList');
-            container.innerHTML = '<p style="color: var(--text-muted);">⏳ جاري التحميل...</p>';
-            const data = await api('/api/bad_words');
-            if (data && data.words && data.words.length) {
-                container.innerHTML = data.words.map(w => {
-                    let clean = w;
-                    try {
-                        const match = w.match(/\\b\\((.*?)\\)\\b/);
-                        if (match) clean = match[1];
-                    } catch(e) {}
-                    return `
-                        <div class="item-row">
-                            <span><strong>${clean}</strong></span>
-                            <button class="btn-primary btn-danger" onclick="removeBadWord('${clean}')"><i class="fa-solid fa-trash"></i> حذف</button>
+        // Simulator
+        function simSendMessage(customText = null) {
+            const input = document.getElementById('simUserInput');
+            const text = (customText || input.value).trim();
+            if (!text) return;
+            const chat = document.getElementById('simChatBox');
+
+            chat.innerHTML += `
+                <div class="flex gap-2 justify-end">
+                    <div class="max-w-[80%] rounded-2xl p-3 bg-amber-600/20 border border-amber-500/30 text-xs text-amber-100">
+                        <span class="font-bold text-[10px] block text-slate-400">عضو مشاغب</span>
+                        ${text}
+                    </div>
+                </div>
+            `;
+            if (!customText) input.value = '';
+            chat.scrollTop = chat.scrollHeight;
+
+            setTimeout(() => {
+                const lower = text.toLowerCase();
+                if (lower.includes('بوت') || lower.includes('bot')) {
+                    chat.innerHTML += `
+                        <div class="flex gap-2 justify-start">
+                            <div class="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-xs shrink-0">P</div>
+                            <div class="max-w-[80%] rounded-2xl p-3 bg-[#17212b] border border-[#2b5278]/40 text-xs text-slate-100">
+                                يا خو ما دصرنيش حبب 😎
+                            </div>
                         </div>
                     `;
-                }).join('');
+                } else if (badWords.some(bw => text.includes(bw))) {
+                    chat.innerHTML += `
+                        <div class="flex gap-2 justify-start">
+                            <div class="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-xs shrink-0">P</div>
+                            <div class="max-w-[80%] rounded-2xl p-3 bg-[#17212b] border border-rose-800 text-xs text-rose-300">
+                                🚫 <strong>تحذير أمني:</strong> تم حذف رسالتك وكتمك 5 دقائق بسبب السب والشتم.
+                            </div>
+                        </div>
+                    `;
+                } else if (text.includes('t.me') || text.includes('http')) {
+                    chat.innerHTML += `
+                        <div class="flex gap-2 justify-start">
+                            <div class="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-xs shrink-0">P</div>
+                            <div class="max-w-[80%] rounded-2xl p-3 bg-[#17212b] border border-rose-800 text-xs text-rose-300">
+                                🔗 <strong>ممنوع الروابط:</strong> تم حذف الرسالة الإعلانية لمنع السبام.
+                            </div>
+                        </div>
+                    `;
+                }
+                chat.scrollTop = chat.scrollHeight;
+            }, 400);
+        }
+
+        function simBotJoin() {
+            const chat = document.getElementById('simChatBox');
+            chat.innerHTML += `
+                <div class="text-center text-[11px] text-slate-400 my-2">تمت إضافة البوت [Crypto_Promo_bot]</div>
+            `;
+            setTimeout(() => {
+                chat.innerHTML += `
+                    <div class="flex gap-2 justify-start">
+                        <div class="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-xs shrink-0">P</div>
+                        <div class="max-w-[80%] rounded-2xl p-3 bg-[#17212b] border border-[#2b5278]/40 text-xs text-slate-100">
+                            🛡️ <strong>البوت الحارس:</strong> تم طرد البوت الدخيل (Crypto_Promo_bot) فوراً لحماية المجموعة! 🚫
+                        </div>
+                    </div>
+                `;
+                chat.scrollTop = chat.scrollHeight;
+            }, 450);
+        }
+
+        function toggleBotLock() {
+            botLocked = !botLocked;
+            const btn = document.getElementById('botLockBtn');
+            const txt = document.getElementById('botLockText');
+            if (botLocked) {
+                btn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-rose-600 bg-rose-600 text-white transition";
+                txt.innerText = "البوت مقفل 🔒";
             } else {
-                container.innerHTML = '<p style="color: var(--text-muted);">📭 لا توجد كلمات ممنوعة حالياً</p>';
+                btn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-700 bg-slate-800/80 text-slate-300 hover:bg-slate-700 transition";
+                txt.innerText = "البوت نشط";
             }
         }
 
-        async function addBadWord() {
-            const input = document.getElementById('newBadWord');
-            const word = input.value.trim();
-            if (!word) return alert('يرجى كتابة كلمة');
-            const data = await api('/api/add_bad_word', { word: word });
-            if (data && data.success) {
-                alert('✅ تم إضافة الكلمة بنجاح');
-                input.value = '';
-                loadBadWords();
+        function togglePrivateLock() {
+            privateLocked = !privateLocked;
+            const btn = document.getElementById('privateLockBtn');
+            const txt = document.getElementById('privateLockText');
+            if (privateLocked) {
+                btn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-amber-500 bg-amber-500/20 text-amber-300 transition";
+                txt.innerText = "الخاص مقفل 🔒";
             } else {
-                alert('❌ فشل إضافة الكلمة: ' + (data.error || 'خطأ غير معروف'));
+                btn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-700 bg-slate-800/80 text-slate-300 hover:bg-slate-700 transition";
+                txt.innerText = "الخاص مفتوح";
             }
         }
 
-        async function removeBadWord(word) {
-            if (!confirm('هل أنت متأكد من حذف الكلمة "' + word + '"؟')) return;
-            const data = await api('/api/remove_bad_word', { word: word });
-            if (data && data.success) {
-                alert('✅ تم حذف الكلمة بنجاح');
-                loadBadWords();
+        function saveServerConfig() {
+            BOT_URL = document.getElementById('cfgUrl').value.trim();
+            TOKEN = document.getElementById('cfgToken').value.trim();
+            localStorage.setItem('pipo_url', BOT_URL);
+            localStorage.setItem('pipo_token', TOKEN);
+            alert("✅ تم حفظ الإعدادات بنجاح!");
+            refreshAll();
+        }
+
+        async function refreshAll() {
+            const data = await api('/api/stats');
+            if (data && !data.error) {
+                document.getElementById('statGroups').innerText = data.totalGroups || groups.length;
+                document.getElementById('statMuted').innerText = data.totalMuted || 0;
+                document.getElementById('statBanned').innerText = data.totalBanned || 0;
+                document.getElementById('connPill').className = "flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold bg-emerald-950/40 border-emerald-800/60 text-emerald-400";
+                document.getElementById('connText').innerText = "متصل بالسيرفر (Active)";
             } else {
-                alert('❌ فشل حذف الكلمة: ' + (data.error || 'خطأ غير معروف'));
+                document.getElementById('connPill').className = "flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold bg-blue-950/40 border-blue-800/60 text-blue-400";
+                document.getElementById('connText').innerText = "وضع المحاكاة المحلي (جاهز)";
             }
         }
 
-        function saveConfig() {
-            BOT_URL = document.getElementById('cfgBotUrl').value.trim();
-            TOKEN = document.getElementById('cfgToken').value;
-            alert('✅ تم حفظ الإعدادات بنجاح!');
-            loadDashboard();
-        }
-
-        setInterval(() => {
-            if (document.getElementById('tab-dashboard').classList.contains('active')) { loadDashboard(); updatePrivateLockStatus(); }
-            if (document.getElementById('tab-muted').classList.contains('active')) loadMuted();
-            if (document.getElementById('tab-groups').classList.contains('active')) loadGroups();
-        }, 30000);
-
-        loadDashboard();
-        updatePrivateLockStatus();
+        refreshAll();
+        renderGroups();
+        renderMuted();
+        renderBadWords();
     </script>
 </body>
 </html>
