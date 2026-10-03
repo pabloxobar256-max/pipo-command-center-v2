@@ -89,7 +89,7 @@ def save_group_settings(chat_id, data):
     save_json(f"group_settings_{chat_id}.json", data)
 
 # ============================================================
-#  قائمة الكلمات الممنوعة المحسنة (دارجة جزائرية/مغربية، فصحى، فرانكو)
+#  قائمة الكلمات الممنوعة
 # ============================================================
 DEFAULT_BAD_WORDS = [
     r'\b(كس|طيز|زب|نيك|شرموطة|قحبة|منيكة|منيوك|مسطي|مصطي|طحان|طيحان)\b',
@@ -216,10 +216,9 @@ async def ban_user(chat, user):
         return False
 
 # ============================================================
-#  معالجات الأحداث الأمنية في المجموعات
+#  معالجات الأحداث الأمنية
 # ============================================================
 
-# الرد التلقائي على نداء كلمة "بوت"
 @client.on(events.NewMessage(func=lambda e: e.is_group and e.raw_text and ('بوت' in e.raw_text or 'bot' in e.raw_text.lower())))
 async def reply_to_bot(event):
     if event.chat_id not in active_groups or bot_locked:
@@ -229,7 +228,6 @@ async def reply_to_bot(event):
         return
     await event.reply("يا خو ما دصرنيش حبب")
 
-# فلتر السب والشتم
 @client.on(events.NewMessage())
 async def handle_swear(event):
     if not event.is_group or event.chat_id not in active_groups or bot_locked:
@@ -259,7 +257,6 @@ async def handle_swear(event):
         name = sender.first_name or "العضو"
         await event.respond(f"🚫 عذراً [{name}](tg://user?id={sender.id})، تم حذف رسالتك وكتمك {dur//60} دقيقة بسبب استخدام ألفاظ بذيئة.")
 
-# فلتر الروابط
 @client.on(events.NewMessage())
 async def handle_links(event):
     if not event.is_group or event.chat_id not in active_groups or bot_locked:
@@ -280,7 +277,6 @@ async def handle_links(event):
         name = sender.first_name or "العضو"
         await event.respond(f"🔗 عفواً [{name}](tg://user?id={sender.id})، يمنع نشر الروابط والإعلانات في هذه المجموعة!")
 
-# فلتر المحتوى الإباحي
 @client.on(events.NewMessage())
 async def handle_porn(event):
     if not event.is_group or event.chat_id not in active_groups or bot_locked:
@@ -304,7 +300,6 @@ async def handle_porn(event):
         name = sender.first_name or "العضو"
         await event.respond(f"🔞 تحذير أمني: [{name}](tg://user?id={sender.id}) تم كتمك لمدة ساعة لنشر محتوى إباحي ممنوع.")
 
-# منع التكرار والسبام (Anti-Duplicate)
 @client.on(events.NewMessage())
 async def handle_flood(event):
     if not event.is_group or event.chat_id not in active_groups or bot_locked:
@@ -330,7 +325,6 @@ async def handle_flood(event):
         return
     user_msgs[text] = now
 
-# الترحيب والكابتشا التفاعلية بالأزرار والبوت الحارس
 @client.on(events.ChatAction(func=lambda e: e.user_joined or e.user_added))
 async def handle_new_member(event):
     if event.chat_id not in active_groups:
@@ -341,7 +335,6 @@ async def handle_new_member(event):
         if not user:
             return
 
-        # البوت الحارس: طرد البوتات الدخيلة فوراً
         me = await client.get_me()
         if user.bot and user.id != me.id:
             if settings.get("bot_hunter_enabled", True):
@@ -352,7 +345,6 @@ async def handle_new_member(event):
                     logger.error(f"فشل طرد البوت: {ex}")
             return
 
-        # الكابتشا التفاعلية بالأزرار الحسابية
         if settings.get("captcha_enabled", True) and not user.bot:
             n1 = random.randint(2, 9)
             n2 = random.randint(1, 9)
@@ -384,7 +376,6 @@ async def handle_new_member(event):
             )
             return
 
-        # رسالة ترحيبية عادية
         welcome_text = settings.get("welcome_text", "أهلاً بك في مجموعتنا!")
         buttons = [
             [Button.inline("📜 قوانين المجموعة", "group_rules_btn")]
@@ -394,7 +385,6 @@ async def handle_new_member(event):
     except Exception as e:
         logger.error(f"خطأ ترحيب: {e}")
 
-# معالج ضغطات الكابتشا
 @client.on(events.CallbackQuery(pattern=r'^cap_'))
 async def on_captcha_click(event):
     data = event.data.decode('utf-8')
@@ -436,14 +426,12 @@ async def on_captcha_click(event):
                 else:
                     await event.answer("❌ إجابة خاطئة! لديك فرصة واحدة متبقية.", alert=True)
 
-# معالج عرض القوانين
 @client.on(events.CallbackQuery(pattern='^group_rules_btn$'))
 async def on_rules_click(event):
     settings = get_group_settings(event.chat_id)
     rules = settings.get("rules", "لا توجد قوانين محددة حالياً.")
     await event.answer(f"📜 قوانين المجموعة:\n{rules}", alert=True)
 
-# التحكم في الخاص
 @client.on(events.NewMessage(func=lambda e: e.is_private))
 async def private_handler(event):
     if private_locked and event.sender_id != DEVELOPER_ID:
@@ -463,7 +451,7 @@ async def unlock_private(event):
     await event.reply("🔓 تم فتح خاص البوت بنجاح.")
 
 # ============================================================
-#  مهام الفحص الدورية وفك الكتم التلقائي
+#  مهام الفحص الدورية
 # ============================================================
 async def background_tasks():
     while True:
@@ -484,7 +472,7 @@ async def background_tasks():
         await asyncio.sleep(25)
 
 # ============================================================
-#  خادم الويب API للوحة التحكم مع دعم كامل لـ CORS
+#  خادم الويب API للوحة التحكم
 # ============================================================
 def cors_json_response(data, status=200):
     return web.json_response(data, status=status, headers={
@@ -561,6 +549,25 @@ async def api_handler(request):
     return cors_json_response({'error': 'غير معروف'})
 
 # ============================================================
+#  ✅ دالة خدمة control.html
+# ============================================================
+async def serve_control(request):
+    """يفتح control.html"""
+    try:
+        return web.FileResponse('control.html')
+    except Exception as e:
+        logger.error(f"خطأ في خدمة control.html: {e}")
+        return web.Response(text=f"خطأ: {e}", status=500)
+
+async def serve_root(request):
+    """الصفحة الرئيسية تفتح اللوحة"""
+    return await serve_control(request)
+
+async def health(request):
+    """health check بسيط"""
+    return web.Response(text="OK")
+
+# ============================================================
 #  التشغيل الرئيسي
 # ============================================================
 async def main():
@@ -570,17 +577,29 @@ async def main():
     logger.info(f"✅ تم تسجيل الدخول بنجاح كـ: @{me.username} (ID: {me.id})")
 
     app = web.Application()
+
+    # CORS preflight
     app.router.add_route('OPTIONS', '/{tail:.*}', options_handler)
+
+    # API routes
     app.router.add_get('/api/stats', api_handler)
     app.router.add_get('/api/groups', api_handler)
     app.router.add_post('/api/broadcast', api_handler)
     app.router.add_post('/api/unmute', api_handler)
+
+    # لوحة التحكم
+    app.router.add_get('/', serve_root)
+    app.router.add_get('/control.html', serve_control)
+
+    # Health check
+    app.router.add_get('/health', health)
 
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, '0.0.0.0', PORT)
     await site.start()
     logger.info(f"🌐 خادم الويب يعمل على المنفذ {PORT}")
+    logger.info(f"🎛️ لوحة التحكم: http://0.0.0.0:{PORT}/control.html")
 
     asyncio.create_task(background_tasks())
     await client.run_until_disconnected()
