@@ -1,10 +1,10 @@
 # ============================================================
-# ⚡ PIPO BOT - النسخة المطورة والاحترافية v5.1 PRO
+# ⚡ PIPO BOT - النسخة المطورة والاحترافية v5.2 PRO
 # 🛡️ نظام أمان متكامل لحماية وإدارة مجموعات التليجرام
 # 👑 برمجة وتطوير: @amirx_xpipo | Developer ID: 8050958688
 # ============================================================
 
-import asyncio, os, time, random, datetime, re, json, logging, tempfile
+import asyncio, os, time, random, datetime, re, json, logging
 from collections import defaultdict
 from telethon import TelegramClient, events, Button
 from telethon.tl.functions.channels import EditBannedRequest
@@ -18,7 +18,7 @@ logging.basicConfig(
 logger = logging.getLogger("PIPO_BOT")
 
 # ============================================================
-#  البيانات الأساسية وتوكنات الاتصال
+#  الإعدادات
 # ============================================================
 API_ID = int(os.environ.get("API_ID", 33938821))
 API_HASH = os.environ.get("API_HASH", '24a5e855b4cf3ce48e054c32ea725aa4')
@@ -27,11 +27,13 @@ DEVELOPER_USERNAME = os.environ.get("DEVELOPER_USERNAME", 'amirx_xpipo')
 DEVELOPER_ID = int(os.environ.get("DEVELOPER_ID", 8050958688))
 API_TOKEN = os.environ.get("API_TOKEN", "pipomaster2026")
 PORT = int(os.environ.get("PORT", 10000))
+PANEL_URL = os.environ.get("PANEL_URL", "https://pipo-command-center-v2.onrender.com/control.html")
+BOT_ADD_URL = os.environ.get("BOT_ADD_URL", "https://t.me/PipoLamachinBot?startgroup=start")
 TEMP_DIR = "/tmp/pipo_uploads"
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 # ============================================================
-#  إدارة تخزين البيانات
+#  تخزين البيانات
 # ============================================================
 def load_json(path, default):
     try:
@@ -60,26 +62,17 @@ def save_groups(): save_json(GROUPS_FILE, list(active_groups))
 def save_global_bans(): save_json(GLOBAL_BAN_FILE, list(global_bans))
 
 # ============================================================
-#  إعدادات المجموعات الفردية
+#  إعدادات المجموعات
 # ============================================================
 def get_group_settings(chat_id):
     path = f"group_settings_{chat_id}.json"
     default = {
-        "swear_protection": True,
-        "link_protection": True,
-        "forward_protection": True,
-        "anti_porn_enabled": True,
-        "bot_hunter_enabled": True,
-        "anti_duplicate_enabled": True,
-        "captcha_enabled": True,
-        "auto_lock_enabled": False,
-        "lock_start_hour": 0,
-        "lock_end_hour": 9,
-        "mute_duration": 300,
-        "welcome_media": {"type": None, "media_id": None, "access_hash": None, "file_reference": ""},
+        "swear_protection": True, "link_protection": True, "forward_protection": True,
+        "anti_porn_enabled": True, "bot_hunter_enabled": True, "anti_duplicate_enabled": True,
+        "captcha_enabled": True, "auto_lock_enabled": False,
+        "lock_start_hour": 0, "lock_end_hour": 9, "mute_duration": 300,
         "welcome_text": "أهلاً بك في مجموعتنا! نتمنى لك إقامة ممتعة مع الالتزام بالقوانين.",
         "rules": "1. الاحترام المتبادل بين الأعضاء.\n2. يمنع نشر الروابط والإعلانات دون إذن الإدارة.\n3. يمنع الألفاظ البذيئة والشتائم بجميع أنواعها.\n4. يمنع المحتوى الإباحي.",
-        "max_warnings": 3
     }
     return load_json(path, default)
 
@@ -98,12 +91,11 @@ DEFAULT_BAD_WORDS = [
     r'\b(انعل[\s]*ابوك|انعل[\s]*امك|انعل[\s]*دينك|انعل[\s]*ربك)\b',
     r'\b(يلعن[\s]*ابوك|يلعن[\s]*امك|يلعن[\s]*دينك|يلعن[\s]*ربك)\b',
 ]
-
 BAD_WORDS = load_json(BAD_WORDS_FILE, DEFAULT_BAD_WORDS)
 def save_bad_words(words): save_json(BAD_WORDS_FILE, words)
 
 # ============================================================
-#  المتغيرات التشغيلية
+#  المتغيرات
 # ============================================================
 client = TelegramClient('bot_session_pro', API_ID, API_HASH)
 BOT_PHOTO = None
@@ -134,37 +126,26 @@ def contains_swear(text):
             return True
     return False
 
-LINK_PATTERNS = [
-    r'https?://[\w\d\.\-_/\?=&%]+',
-    r't\.me/[\w\d_]+',
-    r'telegram\.me/[\w\d_]+',
-    r'www\.[\w\d\.\-_/]+'
-]
-
+LINK_PATTERNS = [r'https?://[\w\d\.\-_/\?=&%]+', r't\.me/[\w\d_]+', r'telegram\.me/[\w\d_]+', r'www\.[\w\d\.\-_/]+']
 def contains_link(text):
     if not text: return False
     return any(re.search(p, text, re.IGNORECASE) for p in LINK_PATTERNS)
 
-PORN_KEYWORDS = [
-    'sex', 'porn', 'xxx', 'nsfw', 'سكس', 'اباحية', 'جنس', 'porno', 'anal', 'بورن',
-    'shemale', 'trans', 'gay', 'lesbian', 'cum', 'orgasm', 'nude', 'naked', 'fuck',
-    'bitch', 'افلام اباحية', 'مقاطع للكبار', 'سكسي'
-]
-
+PORN_KEYWORDS = ['sex', 'porn', 'xxx', 'nsfw', 'سكس', 'اباحية', 'جنس', 'porno', 'anal', 'بورن',
+                 'shemale', 'trans', 'gay', 'lesbian', 'cum', 'orgasm', 'nude', 'naked', 'fuck',
+                 'bitch', 'افلام اباحية', 'مقاطع للكبار', 'سكسي']
 def contains_porn(text):
     if not text: return False
-    t = text.lower()
-    return any(w in t for w in PORN_KEYWORDS)
+    return any(w in text.lower() for w in PORN_KEYWORDS)
 
 # ============================================================
-#  دوال الكتم والحظر
+#  الكتم / الحظر
 # ============================================================
 async def mute_user(chat, user, dur_seconds):
     try:
         until_date = datetime.datetime.fromtimestamp(time.time() + dur_seconds)
         await client(EditBannedRequest(chat, user, ChatBannedRights(
-            until_date=until_date,
-            send_messages=True, send_media=True, send_stickers=True,
+            until_date=until_date, send_messages=True, send_media=True, send_stickers=True,
             send_gifs=True, send_games=True, send_inline=True, embed_link_previews=True
         )))
         return True
@@ -175,8 +156,7 @@ async def mute_user(chat, user, dur_seconds):
 async def unmute_user(chat, user):
     try:
         await client(EditBannedRequest(chat, user, ChatBannedRights(
-            until_date=None,
-            send_messages=False, send_media=False, send_stickers=False,
+            until_date=None, send_messages=False, send_media=False, send_stickers=False,
             send_gifs=False, send_games=False, send_inline=False, embed_link_previews=False
         )))
         return True
@@ -186,9 +166,7 @@ async def unmute_user(chat, user):
 
 async def ban_user(chat, user):
     try:
-        await client(EditBannedRequest(chat, user, ChatBannedRights(
-            until_date=None, view_messages=True
-        )))
+        await client(EditBannedRequest(chat, user, ChatBannedRights(until_date=None, view_messages=True)))
         return True
     except Exception as e:
         logger.error(f"فشل الحظر: {e}")
@@ -216,17 +194,12 @@ async def handle_swear(event):
     settings = get_group_settings(event.chat_id)
     if not settings.get("swear_protection", True):
         return
-    text = event.raw_text or ""
-    if contains_swear(text):
+    if contains_swear(event.raw_text or ""):
         try: await event.delete()
         except: pass
         dur = settings.get("mute_duration", 300)
         await mute_user(event.chat_id, sender.id, dur)
-        mute_status[sender.id] = {
-            'until': time.time() + dur,
-            'name': sender.first_name or 'عضو',
-            'chat_id': event.chat_id
-        }
+        mute_status[sender.id] = {'until': time.time() + dur, 'name': sender.first_name or 'عضو', 'chat_id': event.chat_id}
         name = sender.first_name or "العضو"
         await event.respond(f"🚫 عذراً [{name}](tg://user?id={sender.id})، تم حذف رسالتك وكتمك {dur//60} دقيقة بسبب استخدام ألفاظ بذيئة.")
 
@@ -306,7 +279,7 @@ async def handle_new_member(event):
             n1 = random.randint(2, 9)
             n2 = random.randint(1, 9)
             ans = n1 + n2
-            pending_users[user.id] = {'answer': ans, 'chat': event.chat_id, 'attempts': 0, 'created_at': time.time()}
+            pending_users[user.id] = {'answer': ans, 'chat': event.chat_id, 'attempts': 0}
             await mute_user(event.chat_id, user.id, 120)
             wrong1 = ans + random.choice([-2, 1, 2, 3])
             wrong2 = ans + random.choice([-3, -1, 4])
@@ -317,10 +290,10 @@ async def handle_new_member(event):
                 [Button.inline("❌ أنا بوت", f"cap_bot_{user.id}")]
             ]
             await event.respond(
-                f"👋 أهلاً بك يا [{user.first_name}](tg://user?id={user.id}) في مجموعتنا!\n\n"
-                f"🛡️ **تحقق أمني:** الرجاء حل المسألة لتأكيد أنك إنسان وتفعيل الشات:\n"
+                f"👋 أهلاً بك يا [{user.first_name}](tg://user?id={user.id})!\n\n"
+                f"🛡️ **تحقق أمني:** الرجاء حل المسألة:\n"
                 f"❓ **{n1} + {n2} = ؟**\n"
-                f"⏳ اضغط على الزر الصحيح خلال دقيقة واحدة.",
+                f"⏳ اضغط الزر الصحيح خلال دقيقة.",
                 buttons=buttons
             )
             return
@@ -339,130 +312,221 @@ async def on_captcha_click(event):
         if event.sender_id == uid:
             try:
                 await client.kick_participant(event.chat_id, uid)
-                await event.edit("🚫 تم طرد المستخدم بناءً على اختياره.")
+                await event.edit("🚫 تم طرد المستخدم.")
             except: pass
         return
     if len(parts) >= 3:
         target_uid = int(parts[1])
         selected_val = int(parts[2])
         if event.sender_id != target_uid:
-            await event.answer("⚠️ هذا الاختبار مخصص للعضو المنضم حديثاً فقط!", alert=True)
+            await event.answer("⚠️ هذا الاختبار لك فقط!", alert=True)
             return
         if target_uid in pending_users:
             correct = pending_users[target_uid]['answer']
             if selected_val == correct:
                 del pending_users[target_uid]
                 await unmute_user(event.chat_id, target_uid)
-                await event.edit("✅ **تم التحقق بنجاح!**\nتم فك القيود ويمكنك الآن المشاركة في المجموعة بحرية. مرحباً بك! 🎉")
+                await event.edit("✅ **تم التحقق!**\nيمكنك المشاركة الآن. مرحباً!")
             else:
                 pending_users[target_uid]['attempts'] += 1
                 if pending_users[target_uid]['attempts'] >= 2:
                     del pending_users[target_uid]
                     try: await client.kick_participant(event.chat_id, target_uid)
                     except: pass
-                    await event.edit("❌ فشل التحقق الأمني، تم طردك لحماية المجموعة.")
+                    await event.edit("❌ فشل التحقق، تم طردك.")
                 else:
-                    await event.answer("❌ إجابة خاطئة! لديك فرصة واحدة متبقية.", alert=True)
+                    await event.answer("❌ إجابة خاطئة! فرصة واحدة.", alert=True)
 
 @client.on(events.CallbackQuery(pattern='^group_rules_btn$'))
 async def on_rules_click(event):
     settings = get_group_settings(event.chat_id)
-    rules = settings.get("rules", "لا توجد قوانين محددة حالياً.")
-    await event.answer(f"📜 قوانين المجموعة:\n{rules}", alert=True)
+    rules = settings.get("rules", "لا توجد قوانين.")
+    await event.answer(f"📜 القوانين:\n{rules}", alert=True)
+
+@client.on(events.CallbackQuery(pattern=r'^(features|commands|help|back)$'))
+async def on_menu_click(event):
+    data = event.data.decode('utf-8')
+    if data == "features":
+        text = (
+            "📋 **ميزات PIPO BOT**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━\n"
+            "🛡️ **الحماية:**\n"
+            "• حماية السب 🚫\n"
+            "• حماية الروابط 🔗\n"
+            "• منع الإباحية 🔞\n"
+            "• البوت الحارس 🤖\n"
+            "• مانع المكرر ♻️\n\n"
+            "👑 **الإدارة:**\n"
+            "• نظام الكتم 🔇\n"
+            "• نظام التحذيرات ⚠️\n"
+            "• الكابتشا 🧩\n\n"
+            "📊 **لوحة تحكم كاملة**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"👑 @{DEVELOPER_USERNAME}"
+        )
+        buttons = [[Button.inline("🔙 رجوع", "back")]]
+        await event.edit(text, buttons=buttons)
+    elif data == "commands":
+        text = (
+            "📜 **الأوامر**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━\n"
+            "👤 **للأعضاء:**\n"
+            "• /start — القائمة\n"
+            "• /id — معرّفك\n"
+            "• /help — المساعدة\n\n"
+            "👑 **للإدارة:**\n"
+            "• /تفعيل — تفعيل البوت\n"
+            "• /تعطيل — تعطيل\n"
+            "• /قوانين — عرض القوانين"
+        )
+        buttons = [[Button.inline("🔙 رجوع", "back")]]
+        await event.edit(text, buttons=buttons)
+    elif data == "help":
+        text = (
+            "❓ **المساعدة**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━\n"
+            "📌 للتواصل مع المطور:\n"
+            f"👑 @{DEVELOPER_USERNAME}\n\n"
+            "📊 للوصول للوحة التحكم:\n"
+            "اضغط زر لوحة التحكم"
+        )
+        buttons = [[Button.inline("🔙 رجوع", "back")]]
+        await event.edit(text, buttons=buttons)
+    elif data == "back":
+        await show_start_menu(event)
 
 # ============================================================
-#  ✅ معالجات الخاص (جديد - لإصلاح رد البوت)
+#  ✅ رسالة /start الاحترافية
 # ============================================================
+async def show_start_menu(event):
+    text = (
+        "🤖 **PIPO BOT** 🛡️\n"
+        "━━━━━━━━━━━━━━━━━━━━━━\n"
+        "بوت حماية متطور للمجموعات\n"
+        "━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"👑 **المطور:** @{DEVELOPER_USERNAME}\n"
+        "━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        "🛡️ **حماية شاملة:**\n"
+        "• السب والشتم 🚫\n"
+        "• الروابط والإعلانات 🔗\n"
+        "• المحتوى الإباحي 🔞\n"
+        "• البوتات الدخيلة 🤖\n"
+        "• التكرار والسبام ♻️\n\n"
+        "🧩 **كابتشا تفاعلية** عند الانضمام\n"
+        "📊 **لوحة تحكم كاملة**\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━━"
+    )
+    buttons = [
+        [Button.url("➕ أضفني إلى مجموعتك", BOT_ADD_URL)],
+        [Button.url("📊 لوحة التحكم", PANEL_URL)],
+        [
+            Button.inline("📋 جميع الميزات", "features"),
+            Button.inline("📜 الأوامر", "commands"),
+        ],
+        [Button.inline("❓ المساعدة", "help")],
+    ]
+    try:
+        if BOT_PHOTO:
+            # إذا كانت الرسالة قابلة للتعديل → عدّل الصورة + النص
+            if hasattr(event, 'edit') and event.__class__.__name__ == "CallbackQuery":
+                await event.edit(text, buttons=buttons)
+            else:
+                await event.respond(text, file=BOT_PHOTO, buttons=buttons)
+        else:
+            if hasattr(event, 'edit') and event.__class__.__name__ == "CallbackQuery":
+                await event.edit(text, buttons=buttons)
+            else:
+                await event.respond(text, buttons=buttons)
+    except Exception as e:
+        logger.error(f"خطأ عرض /start: {e}")
+        try:
+            await event.respond(text, buttons=buttons)
+        except: pass
+
 @client.on(events.NewMessage(func=lambda e: e.is_private and e.raw_text and e.raw_text.startswith('/start')))
-async def cmd_start_private(event):
+async def cmd_start(event):
+    if private_locked and event.sender_id != DEVELOPER_ID:
+        await event.reply("🔒 تم قفل خاص البوت بواسطة المطور.")
+        return
+    await show_start_menu(event)
+
+@client.on(events.NewMessage(func=lambda e: e.is_private and e.raw_text and e.raw_text.startswith('/help')))
+async def cmd_help(event):
     if private_locked and event.sender_id != DEVELOPER_ID:
         await event.reply("🔒 تم قفل خاص البوت بواسطة المطور.")
         return
     await event.reply(
-        "🤖 **PIPO BOT** 🛡️\n"
-        "━━━━━━━━━━━━━━━━━━━━━━\n"
-        "بوت حماية متطور للمجموعات\n\n"
-        "📌 **الأوامر:**\n"
-        "• /start — هذه الرسالة\n"
-        "• /id — يعرض معرّف المحادثة\n"
-        "• /help — المساعدة\n"
-        "• /broadcast — إذاعة (مع صورة/فيديو/صوت)\n\n"
+        "📖 **المساعدة**\n\n"
+        "• /start — القائمة الرئيسية\n"
+        "• /id — معرّفك\n"
+        "• /broadcast `<نص>` — إذاعة في كل المجموعات\n\n"
         f"👑 المطور: @{DEVELOPER_USERNAME}"
     )
 
 @client.on(events.NewMessage(func=lambda e: e.is_private and e.raw_text and e.raw_text.startswith('/id')))
-async def cmd_id_private(event):
+async def cmd_id(event):
     await event.reply(
         f"🆔 **معرّفك:**\n"
         f"├ User ID: `{event.sender_id}`\n"
         f"└ Chat ID: `{event.chat_id}`"
     )
 
-@client.on(events.NewMessage(func=lambda e: e.is_private and e.raw_text and e.raw_text.startswith('/help')))
-async def cmd_help_private(event):
+# ============================================================
+#  ✅ رد عام على الرسائل في الخاص (غير الأوامر)
+# ============================================================
+@client.on(events.NewMessage(func=lambda e: e.is_private and e.raw_text and not e.raw_text.startswith('/')))
+async def private_general(event):
+    if event.sender_id == DEVELOPER_ID:
+        return
+    if private_locked:
+        await event.reply("🔒 تم قفل خاص البوت بواسطة المطور.")
+        return
     await event.reply(
-        "📖 **المساعدة**\n\n"
-        "🔹 **الأوامر:**\n"
-        "• /start — البداية\n"
-        "• /id — معرّفك\n"
-        "• /help — هذه الرسالة\n\n"
-        "🔹 **الإذاعة بالوسائط:**\n"
-        "أرسل صورة/فيديو/صوت مع caption `/broadcast نص`\n"
-        "سيتم إرسالها لجميع المجموعات المسجلة."
+        "🤖 **مرحباً!**\n\n"
+        "استخدم /start لعرض القائمة الرئيسية.\n"
+        f"📌 المطور: @{DEVELOPER_USERNAME}"
     )
 
 # ============================================================
-#  ✅ إذاعة من الخاص (نص + وسائط)
+#  ✅ إذاعة من الخاص
 # ============================================================
-@client.on(events.NewMessage(func=lambda e: e.is_private and e.sender_id == DEVELOPER_ID))
-async def handle_private_broadcast(event):
-    if private_locked and event.sender_id != DEVELOPER_ID:
-        return
-    if not event.raw_text and not event.media:
-        return
-    text = event.raw_text or ""
-    if not text.startswith('/broadcast'):
-        return
-    caption = text.replace('/broadcast', '', 1).strip()
-    if not caption and not event.media:
-        await event.reply("❌ أرسل /broadcast مع نص، أو أرسل وسائط مع caption.")
+@client.on(events.NewMessage(func=lambda e: e.is_private and e.sender_id == DEVELOPER_ID and e.raw_text and e.raw_text.startswith('/broadcast')))
+async def handle_broadcast_cmd(event):
+    caption = event.raw_text.replace('/broadcast', '', 1).strip()
+    if not caption:
+        await event.reply("❌ أرسل `/broadcast <النص>`")
         return
     await event.reply(f"⏳ جاري الإذاعة في {len(active_groups)} مجموعة...")
     cnt = 0
     for gid in active_groups:
         try:
-            if event.media:
-                await client.send_file(gid, event.media, caption=f"📢 **إذاعة رسمية:**\n\n{caption}\n\n👑 @{DEVELOPER_USERNAME}")
-            else:
-                await client.send_message(gid, f"📢 **إذاعة رسمية:**\n\n{caption}\n\n👑 @{DEVELOPER_USERNAME}")
+            await client.send_message(gid, f"📢 **إذاعة رسمية:**\n\n{caption}\n\n👑 @{DEVELOPER_USERNAME}")
             cnt += 1
-        except Exception as e:
-            logger.error(f"فشل إذاعة لـ {gid}: {e}")
-    await event.reply(f"✅ تم إرسال الإذاعة إلى {cnt} مجموعة.")
+        except: pass
+    await event.reply(f"✅ أُرسل إلى {cnt} مجموعة.")
 
 # ============================================================
-#  معالج الخاص القديم (احتياطي)
+#  قفل البوت / الخاص
 # ============================================================
-@client.on(events.NewMessage(func=lambda e: e.is_private))
-async def private_handler(event):
-    if private_locked and event.sender_id != DEVELOPER_ID:
-        await event.reply("🔒 تم قفل خاص البوت بواسطة المطور.")
-        return
-
-@client.on(events.NewMessage(pattern='^/غلق_الخاص$', from_users=DEVELOPER_ID))
-async def lock_private(event):
-    global private_locked
-    private_locked = True
-    await event.reply("🔒 تم قفل خاص البوت بنجاح.")
-
-@client.on(events.NewMessage(pattern='^/فتح_الخاص$', from_users=DEVELOPER_ID))
-async def unlock_private(event):
-    global private_locked
-    private_locked = False
-    await event.reply("🔓 تم فتح خاص البوت بنجاح.")
+@client.on(events.NewMessage(func=lambda e: e.is_private and e.sender_id == DEVELOPER_ID and e.raw_text))
+async def dev_commands(event):
+    t = event.raw_text.strip()
+    global bot_locked, private_locked
+    if t == "/قفل":
+        bot_locked = True
+        await event.reply("🔒 البوت مقفل.")
+    elif t == "/فتح":
+        bot_locked = False
+        await event.reply("🔓 البوت مفتوح.")
+    elif t == "/غلق_الخاص":
+        private_locked = True
+        await event.reply("🔒 الخاص مقفل.")
+    elif t == "/فتح_الخاص":
+        private_locked = False
+        await event.reply("🔓 الخاص مفتوح.")
 
 # ============================================================
-#  مهام الفحص الدورية
+#  المهام الدورية
 # ============================================================
 async def background_tasks():
     while True:
@@ -479,11 +543,11 @@ async def background_tasks():
                             except: pass
                     del mute_status[uid]
         except Exception as e:
-            logger.error(f"خطأ في المهام الدورية: {e}")
+            logger.error(f"خطأ دوري: {e}")
         await asyncio.sleep(25)
 
 # ============================================================
-#  خادم الويب API
+#  Web API
 # ============================================================
 def cors_json_response(data, status=200):
     return web.json_response(data, status=status, headers={
@@ -500,13 +564,13 @@ async def options_handler(request):
     })
 
 async def api_handler(request):
+    global bot_locked, private_locked
     token = request.headers.get('X-Bot-Token', '')
     if token != API_TOKEN:
         return cors_json_response({'error': 'Unauthorized'}, status=403)
     path = request.path
     data = await request.json() if request.method == 'POST' else {}
 
-    # ========== Stats ==========
     if path == '/api/stats':
         return cors_json_response({
             'totalGroups': len(active_groups),
@@ -517,7 +581,6 @@ async def api_handler(request):
             'privateLocked': private_locked
         })
 
-    # ========== Groups ==========
     if path == '/api/groups':
         res = []
         for gid in active_groups:
@@ -528,30 +591,18 @@ async def api_handler(request):
             except:
                 title = f"مجموعة {gid}"
                 members = 0
-            res.append({
-                'id': str(gid),
-                'title': title,
-                'members': members,
-                'settings': get_group_settings(gid)
-            })
+            res.append({'id': str(gid), 'title': title, 'members': members, 'settings': get_group_settings(gid)})
         return cors_json_response({'groups': res})
 
-    # ========== Muted (✅ حقيقي) ==========
     if path == '/api/muted':
         muted_list = []
         now = time.time()
         for uid, info in list(mute_status.items()):
             rem = int((info['until'] - now) / 60)
             if rem > 0:
-                muted_list.append({
-                    'uid': uid,
-                    'name': info.get('name', 'مجهول'),
-                    'remaining': rem,
-                    'chat_id': info.get('chat_id', 0)
-                })
+                muted_list.append({'uid': uid, 'name': info.get('name', 'مجهول'), 'remaining': rem, 'chat_id': info.get('chat_id', 0)})
         return cors_json_response({'muted': muted_list})
 
-    # ========== Unmute ==========
     if path == '/api/unmute':
         uid = data.get('uid')
         if uid:
@@ -562,7 +613,6 @@ async def api_handler(request):
                 del mute_status[int(uid)]
             return cors_json_response({'success': True})
 
-    # ========== Broadcast (نص) ==========
     if path == '/api/broadcast':
         msg = data.get('message', '')
         pin = data.get('pin', False)
@@ -576,17 +626,15 @@ async def api_handler(request):
                     try: await client.pin_message(gid, sent.id)
                     except: pass
                 cnt += 1
-            except Exception as e:
-                logger.error(f"فشل الإرسال لـ {gid}: {e}")
+            except: pass
         return cors_json_response({'success': True, 'count': cnt})
 
-    # ========== Bad Words (✅ حقيقي) ==========
     if path == '/api/bad_words':
         clean = []
         for w in BAD_WORDS:
             m = re.search(r'\\b\(([^)]+)\)\\b', w)
             clean.append(m.group(1) if m else w)
-        return cors_json_response({'words': clean, 'raw': BAD_WORDS})
+        return cors_json_response({'words': clean})
 
     if path == '/api/add_bad_word':
         word = data.get('word', '').strip()
@@ -597,24 +645,37 @@ async def api_handler(request):
             BAD_WORDS.append(new_regex)
             save_bad_words(BAD_WORDS)
             return cors_json_response({'success': True})
-        return cors_json_response({'error': 'الكلمة موجودة مسبقاً'})
+        return cors_json_response({'error': 'موجودة'})
 
     if path == '/api/remove_bad_word':
         word = data.get('word', '').strip()
-        if not word:
-            return cors_json_response({'error': 'كلمة فارغة'}, status=400)
         target = r'\b(' + re.escape(word) + r')\b'
         if target in BAD_WORDS:
             BAD_WORDS.remove(target)
             save_bad_words(BAD_WORDS)
             return cors_json_response({'success': True})
-        return cors_json_response({'error': 'الكلمة غير موجودة'})
+        return cors_json_response({'error': 'غير موجودة'})
+
+    # ✅ قفل البوت
+    if path == '/api/lock_status':
+        return cors_json_response({'locked': bot_locked})
+
+    if path == '/api/toggle_lock':
+        action = data.get('action', '')
+        bot_locked = (action == 'lock')
+        return cors_json_response({'success': True, 'locked': bot_locked})
+
+    # ✅ قفل الخاص
+    if path == '/api/private_status':
+        return cors_json_response({'locked': private_locked})
+
+    if path == '/api/toggle_private':
+        action = data.get('action', '')
+        private_locked = (action == 'lock')
+        return cors_json_response({'success': True, 'locked': private_locked})
 
     return cors_json_response({'error': 'غير معروف'})
 
-# ============================================================
-#  ✅ إذاعة الوسائط من اللوحة (multipart upload)
-# ============================================================
 async def broadcast_media(request):
     token = request.headers.get('X-Bot-Token', '')
     if token != API_TOKEN:
@@ -624,32 +685,22 @@ async def broadcast_media(request):
         media_type = "document"
         caption = ""
         file_path = None
-        original_name = "file"
-
         while True:
             part = await reader.next()
-            if part is None:
-                break
-            if part.name == 'type':
-                media_type = (await part.text()).strip()
-            elif part.name == 'caption':
-                caption = (await part.text()).strip()
+            if part is None: break
+            if part.name == 'type': media_type = (await part.text()).strip()
+            elif part.name == 'caption': caption = (await part.text()).strip()
             elif part.name == 'file':
-                original_name = part.filename or "file"
-                ext = os.path.splitext(original_name)[1] or ""
+                ext = os.path.splitext(part.filename or "file")[1] or ""
                 file_path = os.path.join(TEMP_DIR, f"{int(time.time())}_{random.randint(1000,9999)}{ext}")
                 with open(file_path, 'wb') as f:
                     while True:
                         chunk = await part.read_chunk()
-                        if not chunk:
-                            break
+                        if not chunk: break
                         f.write(chunk)
-
         if not file_path or not os.path.exists(file_path):
             return cors_json_response({'error': 'لم يتم استلام الملف'}, status=400)
-
         full_caption = f"📢 **إذاعة رسمية:**\n\n{caption}\n\n👑 @{DEVELOPER_USERNAME}" if caption else f"📢 **إذاعة رسمية**\n👑 @{DEVELOPER_USERNAME}"
-
         cnt = 0
         for gid in active_groups:
             try:
@@ -658,46 +709,49 @@ async def broadcast_media(request):
                 elif media_type == 'video':
                     await client.send_file(gid, file_path, caption=full_caption, supports_streaming=True)
                 elif media_type == 'audio':
-                    await client.send_file(gid, file_path, caption=full_caption, voice_note=False)
-                elif media_type == 'voice':
-                    await client.send_file(gid, file_path, voice_note=True)
+                    await client.send_file(gid, file_path, caption=full_caption)
                 else:
                     await client.send_file(gid, file_path, caption=full_caption)
                 cnt += 1
             except Exception as e:
-                logger.error(f"فشل إذاعة وسائط لـ {gid}: {e}")
-
+                logger.error(f"فشل إذاعة لـ {gid}: {e}")
         try: os.remove(file_path)
         except: pass
-
         return cors_json_response({'success': True, 'count': cnt})
-
     except Exception as e:
-        logger.error(f"خطأ في رفع الوسائط: {e}")
+        logger.error(f"خطأ رفع: {e}")
         return cors_json_response({'error': str(e)[:200]}, status=500)
 
-# ============================================================
-#  تشغيل
-# ============================================================
 async def serve_control(request):
     return web.FileResponse('control.html')
-
-async def serve_root(request):
-    return await serve_control(request)
 
 async def health(request):
     return web.Response(text="OK")
 
+# ============================================================
+#  التشغيل
+# ============================================================
 async def main():
-    logger.info("⚡ جاري تشغيل PIPO BOT v5.1...")
+    global BOT_PHOTO
+    logger.info("⚡ تشغيل PIPO BOT v5.2...")
     await client.start(bot_token=BOT_TOKEN)
     me = await client.get_me()
-    logger.info(f"✅ تم تسجيل الدخول بنجاح كـ: @{me.username} (ID: {me.id})")
+    logger.info(f"✅ تم تسجيل الدخول: @{me.username}")
+
+    # ✅ جلب صورة البوت تلقائياً
+    try:
+        photos = await client.get_profile_photos('me', limit=1)
+        if photos:
+            BOT_PHOTO = photos[0]
+            logger.info("✅ تم تحميل صورة البوت")
+        else:
+            logger.info("⚠ لا توجد صورة للبوت (اضبطها من BotFather)")
+    except Exception as e:
+        logger.warning(f"⚠ تعذر جلب صورة البوت: {e}")
 
     app = web.Application()
     app.router.add_route('OPTIONS', '/{tail:.*}', options_handler)
 
-    # APIs
     app.router.add_get('/api/stats', api_handler)
     app.router.add_get('/api/groups', api_handler)
     app.router.add_get('/api/muted', api_handler)
@@ -706,12 +760,13 @@ async def main():
     app.router.add_get('/api/bad_words', api_handler)
     app.router.add_post('/api/add_bad_word', api_handler)
     app.router.add_post('/api/remove_bad_word', api_handler)
-
-    # ✅ إذاعة وسائط (multipart)
+    app.router.add_get('/api/lock_status', api_handler)
+    app.router.add_post('/api/toggle_lock', api_handler)
+    app.router.add_get('/api/private_status', api_handler)
+    app.router.add_post('/api/toggle_private', api_handler)
     app.router.add_post('/api/broadcast_media', broadcast_media)
 
-    # الواجهة
-    app.router.add_get('/', serve_root)
+    app.router.add_get('/', serve_control)
     app.router.add_get('/control.html', serve_control)
     app.router.add_get('/health', health)
 
